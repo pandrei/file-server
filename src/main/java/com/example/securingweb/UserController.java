@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserController {
-    private final InMemoryUserRepository userRepository;
+    private final userStorageService userRepository;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(InMemoryUserRepository userRepository) {
+    public UserController(userStorageService userRepository) {
         this.userRepository = userRepository;
     }
 

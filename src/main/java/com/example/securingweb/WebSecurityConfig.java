@@ -46,7 +46,7 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public UserDetailsService userDetailsService(InMemoryUserRepository userRepository) {
+	public UserDetailsService userDetailsService(userStorageService userRepository) {
 		return new UserDetailsService() {
 			@Override
 			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -64,7 +64,7 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 }

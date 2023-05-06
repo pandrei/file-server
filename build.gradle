@@ -21,7 +21,9 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
 	implementation 'org.springframework.security:spring-security-test'
 	// end::security-dependencies[]
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.12.49'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 }
 
 test {

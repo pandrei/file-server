@@ -1,12 +1,17 @@
 package com.example.securingweb;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import lombok.Data;
 
 import java.sql.ConnectionBuilder;
 
 @Data
+@DynamoDBTable(tableName = "Users")
 public class User {
     private Long id;
+    @DynamoDBHashKey(attributeName = "username")
     private String username;
     private String password;
     private String firstName;
