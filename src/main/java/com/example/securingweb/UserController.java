@@ -1,5 +1,6 @@
 package com.example.securingweb;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.lambda.model.InvokeRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -25,6 +26,9 @@ public class UserController {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private RelationshipService relationshipService;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(userStorageService userRepository) {
@@ -112,6 +116,22 @@ public class UserController {
                 }
             }
 
+            // Build a map of file relations
+            Map<String, ArrayList<String>> fileRelations = new HashMap<>();
+            List<Relationship> relationships = relationshipService.getRelationships();
+            for (Relationship relationship : relationships) {
+                String left = relationship.getLeft();
+                String right = relationship.getRight();
+                if (fileRelations.containsKey(left)) {
+                    fileRelations.get(left).add(right);
+                } else {
+                    ArrayList<String> relatedFiles = new ArrayList<>();
+                    relatedFiles.add(right);
+                    fileRelations.put(left, relatedFiles);
+                }
+            }
+            logger.info("File relations is {}", fileRelations);
+            model.addAttribute("fileRelations", fileRelations);
             // Add the file entries to the model
             model.addAttribute("fileEntries", fileEntries);
 

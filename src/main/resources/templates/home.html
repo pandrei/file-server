@@ -5,6 +5,8 @@
 </head>
 <body>
 <h1>Welcome!</h1>
+
+
 <h2 th:if="${bucketExists}" th:text="'Your Files in ' + ${bucketName} + ':'"></h2>
 <h2 th:if="${not bucketExists}">Create storage:</h2>
 <form th:if="${not bucketExists}" th:action="@{/createBucket}" method="post">
@@ -25,5 +27,15 @@
         </div>
     </li>
 </ul>
+
+<h2>Relationships based on your files:</h2>
+<table>
+    <tr th:each="file : ${fileRelations}">
+        <td th:text="${file.key}">keyvalue</td>
+        <td>
+            <span th:text="' is linked to ' + ${#strings.listJoin(file.value, ', ')}"></span>
+        </td>
+    </tr>
+</table>
 </body>
 </html>
