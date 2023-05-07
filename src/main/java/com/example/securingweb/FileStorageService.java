@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.model.InvokeRequest;
 import com.amazonaws.services.lambda.model.InvokeResult;
@@ -38,10 +39,12 @@ public class FileStorageService
     private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
     private final AmazonS3 amazonS3;
 
+    private final DynamoDBMapper dynamoDBMapper;
     private final AWSLambda lambda;
-    public FileStorageService(AmazonS3 amazonS3, AWSLambda lambda) {
+    public FileStorageService(AmazonS3 amazonS3, AWSLambda lambda, AmazonDynamoDB amazonDynamoDB) {
         this.amazonS3 = amazonS3;
         this.lambda = lambda;
+        this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
     }
     public boolean createBucket(String bucketName) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
@@ -110,4 +113,19 @@ public class FileStorageService
         }
     }
 
+    public void saveFileToDb(FileEntry fileEntry) {
+        dynamoDBMapper.save(fileEntry);
+    }
+
+
+    public FileEntry getFileEntry(String username, String fileKey) {
+        FileEntry fileEntry = null;
+        try {
+            fileEntry = dynamoDBMapper.load(FileEntry.class, username, fileKey);
+            logger.info("Retrieved file entry for user {} with file key {}", username, fileKey);
+        } catch (Exception e) {
+            logger.error("Error retrieving file entry for user {} with file key {}: {}", username, fileKey, e.getMessage());
+        }
+        return fileEntry;
+    }
 }

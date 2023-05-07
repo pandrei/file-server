@@ -17,6 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.*;
+
 @Controller
 public class UserController {
     private final userStorageService userRepository;
@@ -73,6 +75,9 @@ public class UserController {
         if (bucketExists) {
             // If bucket exists, upload the file
             fileStorageService.uploadFile(bucketName, file);
+            String fileName = file.getOriginalFilename();
+            FileEntry fileEntry = new FileEntry(1L, fileName, username, new Date(), FileEntry.Status.NOT_STARTED);
+            fileStorageService.saveFileToDb(fileEntry);
         }
 
         return "redirect:/home";
@@ -93,6 +98,22 @@ public class UserController {
             ObjectListing files = fileStorageService.listFiles(bucketName);
             model.addAttribute("bucketName", bucketName);
             model.addAttribute("files", files.getObjectSummaries());
+
+            List<FileEntry> fileEntries = new ArrayList<>();
+            for (S3ObjectSummary file : files.getObjectSummaries()) {
+                // Get the file key (i.e., object key)
+                String fileKey = file.getKey();
+                // Get the corresponding file entry from DynamoDB
+                FileEntry fileEntry = fileStorageService.getFileEntry(username, fileKey);
+
+                if (fileEntry != null) {
+                    // Add the file entry to the list
+                    fileEntries.add(fileEntry);
+                }
+            }
+
+            // Add the file entries to the model
+            model.addAttribute("fileEntries", fileEntries);
 
             // Add form for file upload
             model.addAttribute("fileForm", new FileForm());
