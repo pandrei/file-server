@@ -3,10 +3,8 @@ package com.example.securingweb;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
+import com.example.securingweb.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +16,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-public class UserDynamoDBRepository {
+public class UserRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserDynamoDBRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
     private final DynamoDBMapper dynamoDBMapper;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserDynamoDBRepository(AmazonDynamoDB amazonDynamoDB, BCryptPasswordEncoder passwordEncoder) {
+    public UserRepository(AmazonDynamoDB amazonDynamoDB, BCryptPasswordEncoder passwordEncoder) {
         this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
         this.passwordEncoder = passwordEncoder;
     }

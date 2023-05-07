@@ -22,6 +22,8 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-test'
 	// end::security-dependencies[]
 	implementation group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.12.49'
+	implementation 'javax.servlet:javax.servlet-api:4.0.1'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }

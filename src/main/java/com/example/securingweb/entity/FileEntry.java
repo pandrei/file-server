@@ -1,4 +1,4 @@
-package com.example.securingweb;
+package com.example.securingweb.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;

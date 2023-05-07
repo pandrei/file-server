@@ -1,33 +1,20 @@
-package com.example.securingweb;
+package com.example.securingweb.service;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.model.InvokeRequest;
-import com.amazonaws.services.lambda.model.InvokeResult;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import com.amazonaws.services.s3.transfer.Upload;
+import com.example.securingweb.entity.FileEntry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +89,11 @@ public class FileStorageService
         try {
             String fileName = file.getOriginalFilename();
             byte[] bytes = file.getBytes();
+            int fileSizeKB = bytes.length / 1024; // Get file size in KB
+            if (fileSizeKB > 500) { // Check if file size is greater than 500KB
+                logger.warn("File size is too large: {}KB (max allowed: 500KB)", fileSizeKB);
+                return false;
+            }
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(bytes.length);
             amazonS3.putObject(bucketName, fileName, new ByteArrayInputStream(bytes), metadata);

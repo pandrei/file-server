@@ -1,8 +1,7 @@
-package com.example.securingweb;
+package com.example.securingweb.service;
 
-import com.amazonaws.services.lambda.AWSLambda;
-import com.amazonaws.services.lambda.model.InvokeRequest;
-import com.amazonaws.services.lambda.model.InvokeResult;
+import com.example.securingweb.UserRepository;
+import com.example.securingweb.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ public class userStorageService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
-    private UserDynamoDBRepository userDynamoDBRepository;
+    private UserRepository userRepository;
 
 
     private long nextId = 1L;
@@ -28,11 +27,11 @@ public class userStorageService {
         user.setId(nextId++);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         logger.info("Adding user: {}", user);
-        userDynamoDBRepository.save(user);
+        userRepository.save(user);
     }
 
     public User findByUsername(String username) {
-        Optional<User> userOptional = userDynamoDBRepository.findById(username);
+        Optional<User> userOptional = userRepository.findById(username);
         return userOptional.orElse(null);
     }
 }

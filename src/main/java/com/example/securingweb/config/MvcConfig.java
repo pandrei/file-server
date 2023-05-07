@@ -1,4 +1,4 @@
-package com.example.securingweb;
+package com.example.securingweb.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;

@@ -1,4 +1,4 @@
-package com.example.securingweb;
+package com.example.securingweb.entity;
 
 import org.springframework.web.multipart.MultipartFile;
 
