@@ -1,11 +1,27 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-    <head>
-        <title>Spring Security Example</title>
-    </head>
-    <body>
-        <h1>Welcome!</h1>
-        
-        <p>Click <a th:href="@{/hello}">here</a> to see a greeting.</p>
-    </body>
+<head>
+    <title>Spring Security Example</title>
+</head>
+<body>
+<h1>Welcome!</h1>
+
+<h2 th:if="${bucketExists}" th:text="'Your Files in ' + ${bucketName} + ':'"></h2>
+<h2 th:if="${not bucketExists}">Create storage:</h2>
+<form th:if="${not bucketExists}" th:action="@{/createBucket}" method="post">
+    <input type="submit" value="Create storage"/>
+</form>
+
+<ul th:if="${bucketExists}">
+    <li th:each="file : ${files}">
+        <a th:href="${'https://' + bucketName + '.s3.amazonaws.com/' + file.getKey()}" th:text="${file.getKey()}"></a>
+    </li>
+</ul>
+
+<form th:if="${bucketExists}" th:object="${fileForm}" th:action="@{/uploadFile}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file"/>
+    <input type="submit" value="Upload file"/>
+</form>
+
+</body>
 </html>
