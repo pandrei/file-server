@@ -114,26 +114,18 @@ public class UserController {
 
             // Build a map of file relations
             Map<String, ArrayList<String>> fileRelations = new HashMap<>();
+            List<Relationship> relationships = relationshipService.getRelationships();
             for (FileEntry fileEntry : fileEntries) {
                 String fileKey = fileEntry.getFileName();
                 String left = fileKey.substring(0, fileKey.lastIndexOf(".txt"));
-                List<Relationship> relationships = relationshipService.getRelationships();
+                ArrayList<String> relatedFiles = new ArrayList<>();
                 for (Relationship relationship : relationships) {
                     String right = relationship.getRight();
-                    if (fileEntries.stream().anyMatch(entry -> entry.getFileName().equals(right + ".txt"))) {
-                        if (fileRelations.containsKey(left)) {
-                            // check if right already exists in the value list
-                            ArrayList<String> relatedFiles = fileRelations.get(left);
-                            if (!relatedFiles.contains(right)) {
-                                relatedFiles.add(right);
-                            }
-                        } else {
-                            ArrayList<String> relatedFiles = new ArrayList<>();
-                            relatedFiles.add(right);
-                            fileRelations.put(left, relatedFiles);
-                        }
+                    if (left.equals(relationship.getLeft())) {
+                        relatedFiles.add(right);
                     }
                 }
+                fileRelations.put(left, relatedFiles);
             }
             logger.info("File relations is {}", fileRelations);
             model.addAttribute("fileRelations", fileRelations);

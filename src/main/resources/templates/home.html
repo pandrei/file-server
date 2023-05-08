@@ -2,43 +2,66 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Spring Security Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" integrity="sha384-xUZz+UZf1MS8TjwTZjJQIfg7JyyQjbYksWlVcR9+J0/yVfLHQh3a7Vv/Yx/XsUyG" crossorigin="anonymous">
 </head>
 <body>
-<h1>Welcome!</h1>
+<div class="container">
+    <h1 class="mt-5">Welcome!</h1>
+    <div th:if="${not bucketExists}">
+        <h2>Create storage:</h2>
+        <form th:action="@{/createBucket}" method="post">
+            <button type="submit" class="btn btn-primary">Create storage</button>
+        </form>
+    </div>
+    <div th:if="${bucketExists}">
+        <form th:object="${fileForm}" th:action="@{/uploadFile}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="fileInput" class="form-label">Choose file to upload:</label>
+                <input type="file" class="form-control" id="fileInput" name="file"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload file</button>
+        </form>
+    </div>
+    <div th:if="${not #lists.isEmpty(fileEntries)}">
+        <h2>Your File Entries:</h2>
+        <ul class="list-group">
+            <li th:each="fileEntry : ${fileEntries}" class="list-group-item">
+                <div>
+                    <span th:text="'File name: ' + ${fileEntry.fileName}"></span>
+                    <span th:text="'Date uploaded: ' + ${fileEntry.dateUploaded}"></span>
+                    <span th:text="'Status: ' + ${fileEntry.status}"></span>
+                    <a th:href="${'https://' + bucketName + '.s3.amazonaws.com/' + fileEntry.fileName}" th:text="${fileEntry.fileName}"></a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <h2>Relationships based on your files:</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">File</th>
+            <th scope="col">Linked files</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="fileRelation : ${fileRelations}">
+            <td th:text="${fileRelation.key}"></td>
+            <td>
+                <span th:each="linkedFile : ${fileRelation.value}" th:text="${linkedFile} + ', '"></span>
 
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-primary">Logout</button>
+    </form>
 
-<h2 th:if="${bucketExists}" th:text="'Your Files in ' + ${bucketName} + ':'"></h2>
-<h2 th:if="${not bucketExists}">Create storage:</h2>
-<form th:if="${not bucketExists}" th:action="@{/createBucket}" method="post">
-    <input type="submit" value="Create storage"/>
-</form>
-<form th:if="${bucketExists}" th:object="${fileForm}" th:action="@{/uploadFile}" method="post" enctype="multipart/form-data">
-    <input type="file" name="file"/>
-    <input type="submit" value="Upload file"/>
-</form>
-<h2 th:if="${not #lists.isEmpty(fileEntries)}">Your File Entries:</h2>
-<ul th:if="${not #lists.isEmpty(fileEntries)}">
-    <li th:each="fileEntry : ${fileEntries}">
-        <div>
-            <span th:text="'File name: ' + ${fileEntry.fileName}"></span>
-            <span th:text="'Date uploaded: ' + ${fileEntry.dateUploaded}"></span>
-            <span th:text="'Status: ' + ${fileEntry.status}"></span>
-            <a th:href="${'https://' + bucketName + '.s3.amazonaws.com/' + fileEntry.fileName}" th:text="${fileEntry.fileName}"></a>
-        </div>
-    </li>
-</ul>
-
-<h2>Relationships based on your files:</h2>
-<table>
-    <tr th:each="file : ${fileRelations}">
-        <td th:text="${file.key}">keyvalue</td>
-        <td>
-            <span th:text="' is linked to ' + ${#strings.listJoin(file.value, ', ')}"></span>
-        </td>
-    </tr>
-</table>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Logout"/>
-</form>
+</div>
+<!-- Bootstrap core JavaScript -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Bq3XrTzT0pamTJj/WvAuD0MfA0QgJBJ9XUHb6U4HY6uJwPyoFZ+u2cYz+7VxUmhj" crossorigin="anonymous"></script>
 </body>
 </html>

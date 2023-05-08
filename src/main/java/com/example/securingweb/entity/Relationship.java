@@ -15,4 +15,12 @@ public class Relationship {
 
     public Relationship() {}
 
+    @Override
+    public String toString() {
+        return "Relationship{" +
+                "left='" + left + '\'' +
+                ", right='" + right + '\'' +
+                '}';
+    }
+
 }
